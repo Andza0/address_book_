@@ -12,6 +12,7 @@
 
 void sig_int_handler(int signal);
 void sig_term_handler(int signal);
+void sig_quit_handler(int signal);
 void set_signal_action(void);
 
 volatile sig_atomic_t int_flag = 0;
@@ -100,6 +101,13 @@ void sig_term_handler(int signal)
     }
     
 }
+void sig_quit_handler(int signal)
+{
+    if(signal == SIGQUIT){
+       int_flag = 1; 
+    }
+    
+}
 
 
 void set_signal_action(void)
@@ -111,7 +119,13 @@ void set_signal_action(void)
     struct sigaction sig_term;
     bzero(&sig_term, sizeof(sig_term));
     sig_term.sa_handler = &sig_term_handler;
+    
+
+    struct sigaction sig_quit;
+    bzero(&sig_quit, sizeof(sig_quit));
+    sig_quit.sa_handler = &sig_quit_handler;
 
     sigaction(SIGINT, &sig_int, NULL);
     sigaction(SIGTERM, &sig_term, NULL);
+    sigaction(SIGQUIT, &sig_quit, NULL);
 }
