@@ -8,6 +8,7 @@
 #include <locale.h>
 #include "parse.h"
 #include <signal.h>
+#include <errno.h>
 
 void sig_int_handler(int signal);
 void set_signal_action(void);
@@ -46,12 +47,14 @@ int main(void){
 
     if((stream = fopen(file_dir, "r"))){
         ret = parse_csv(stream, &list);
-        if(ret != 1){
-            print_log(win_logs, "Nepavyko nuskaityti failo");
+        if(ret == 1){
+            print_output_list(win_output, list);
         }
         fclose(stream);
     }
-    print_output_list(win_output, list);
+    else {
+        print_log(win_logs, "Nepavyko nuskaityti saraso");
+    }
 
     ret = 0;
     while(ret != 1 && int_flag != 1){
@@ -59,6 +62,8 @@ int main(void){
             delwin(win_output);
             delwin(win_logs);
             delwin(win_control);
+            erase();
+            refresh();
             ret = draw_gui(&win_output, &win_logs, &win_control);
             if(ret == -1){
                 perror("Nepavyko sukurti lango: ");
