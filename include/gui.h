@@ -3,12 +3,11 @@
 
 #include <ncurses.h>
 #include "linked_list.h"
+#include <signal.h>
 
 WINDOW *create_win(int rows, int cols, int starty, int startx);
 
-//Pagrindinis gui metodas, sukuria visus langus, kontroliuoja inputus..
-int draw_gui(struct node **list, char *error_msg);
-
+int draw_gui(WINDOW **win_output, WINDOW **win_logs, WINDOW **win_control);
 
 void print_controls(WINDOW *win);
 void print_output_arr(WINDOW *win_output, struct address *arr, int count);

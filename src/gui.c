@@ -53,7 +53,7 @@ void print_arr(WINDOW *win, struct address *arr, int count)
     }
 }
 
-int draw_gui(struct node **list, char *error_msg)
+int draw_gui(WINDOW **win_output, WINDOW **win_logs, WINDOW **win_control)
 {
     cbreak();
     noecho();
@@ -68,8 +68,8 @@ int draw_gui(struct node **list, char *error_msg)
     int starty_output = 0;
     int startx_output = 0;
 
-    WINDOW *win_output = create_win(height_output, width_output, starty_output, startx_output);
-    if(win_output == NULL){
+    *win_output = create_win(height_output, width_output, starty_output, startx_output);
+    if(*win_output == NULL){
         return -1;
     }
 
@@ -78,8 +78,8 @@ int draw_gui(struct node **list, char *error_msg)
 	int starty_control = 0;
 	int startx_control = col / 2;	
 
-    WINDOW *win_control = create_win(height_control, width_control, starty_control, startx_control);
-    if(win_control == NULL){
+    *win_control = create_win(height_control, width_control, starty_control, startx_control);
+    if(*win_control == NULL){
         return -1;
     }
 
@@ -87,31 +87,17 @@ int draw_gui(struct node **list, char *error_msg)
     int width_logs = col / 2 ;
     int starty_logs = (row / 2);
     int startx_logs = col / 2;
-    WINDOW *win_logs = create_win(height_logs, width_logs, starty_logs, startx_logs);
-    if(win_logs == NULL)
+    *win_logs = create_win(height_logs, width_logs, starty_logs, startx_logs);
+    if(*win_logs == NULL)
     {
         return -1;
     }
-    keypad(win_logs, TRUE);
+    keypad(*win_logs, TRUE);
 
-    if(error_msg != NULL){
-        print_log(win_logs, error_msg);
-    }
-    else{
-       print_list(*list, win_output); 
-    }
-    wrefresh(win_output);
+    wrefresh(*win_output);
 
-    print_controls(win_control);
-    wrefresh(win_control);
-
-    int ret = 0;
-    while(ret != 1){
-        ret = control_handler(win_logs, win_output, list);
-    }
-    if(ret == -1){
-        return -1;
-    }
+    print_controls(*win_control);
+    wrefresh(*win_control);
 
     return 1;
 }
@@ -133,7 +119,7 @@ int control_handler(WINDOW *win_logs, WINDOW *win_output, struct node **list)
 
         entry = malloc(sizeof(struct node));
         if(entry == NULL){
-            return -1;
+            return 1;
         }
         ret = get_input_full_entry(win_logs, list, entry);
         if(ret == 1){
@@ -154,7 +140,7 @@ int control_handler(WINDOW *win_logs, WINDOW *win_output, struct node **list)
         }
         entry = malloc(sizeof(struct node));
         if(entry == NULL){
-            return -1;
+            return 1;
         }
         ret = get_input_full_entry(win_logs, list, entry);
         if(ret > 0){
@@ -260,6 +246,10 @@ int control_handler(WINDOW *win_logs, WINDOW *win_output, struct node **list)
         }
         break;
         //==================================================================================
+    case KEY_RESIZE:
+        return KEY_RESIZE;
+    default:
+        break;
     }
     /*
     #define NAME 1
