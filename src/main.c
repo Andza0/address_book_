@@ -11,7 +11,9 @@
 #include <errno.h>
 
 void sig_int_handler(int signal);
+void sig_term_handler(int signal);
 void set_signal_action(void);
+
 volatile sig_atomic_t int_flag = 0;
 
 int main(void){
@@ -91,6 +93,14 @@ void sig_int_handler(int signal)
     }
     
 }
+void sig_term_handler(int signal)
+{
+    if(signal == SIGTERM){
+       int_flag = 1; 
+    }
+    
+}
+
 
 void set_signal_action(void)
 {
@@ -98,6 +108,10 @@ void set_signal_action(void)
     bzero(&sig_int, sizeof(sig_int));
     sig_int.sa_handler = &sig_int_handler;
 
+    struct sigaction sig_term;
+    bzero(&sig_term, sizeof(sig_term));
+    sig_term.sa_handler = &sig_term_handler;
 
     sigaction(SIGINT, &sig_int, NULL);
+    sigaction(SIGTERM, &sig_term, NULL);
 }
