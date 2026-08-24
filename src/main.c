@@ -3,53 +3,50 @@
 #include "linked_list.h"
 #include <string.h>
 #include <stdlib.h>
-
-#define DELIMITER ","
-
-void parse_csv(FILE *stream, struct node **list);
+#include <ncurses.h>
+#include "gui.h"
+#include <locale.h>
+#include "parse.h"
 
 int main(void){
 
     struct node *list = NULL;
 
+    char *home_dir = getenv("HOME");
     char *csv_file = "addresses.csv";
+
+    char file_dir[40];
+    snprintf(file_dir, sizeof(file_dir), "%s/%s", home_dir, csv_file);
+
+
     FILE *stream;
 
-    if((stream = fopen(csv_file, "r")) == NULL){
-        perror("Klaida atidarant faila:");
-        exit(1);
+    char *error_msg = NULL;
+    int ret;
+
+    if((stream = fopen(file_dir, "r"))){
+        ret = parse_csv(stream, &list);
+        if(ret != 1){
+            error_msg = "Nepavyko nuskaityti failo";
+        }
+        fclose(stream);
     }
-    parse_csv(stream, &list);
-    fclose(stream);
 
-    print_list(list);
 
-    delete_list(list);
+    setlocale(LC_ALL, "");
+    setenv("NCURSES_NO_UTF8_ACS", "1", 1);
+
+    initscr();
+
+    ret = draw_gui(&list, error_msg);
+
+    if(ret == -1){
+        endwin();
+        delete_list(&list);
+        return 1;
+    }
+    endwin();
+    delete_list(&list);
 
     return 0;
-}
-
-void parse_csv(FILE *stream, struct node **list){
-    char line[120];
-
-    while(fgets(line, sizeof(line), stream) != NULL){
-        char *name = strtok(line, DELIMITER);
-        char *surname = strtok(NULL, DELIMITER);
-        char *email = strtok(NULL, DELIMITER);
-        char *phone_number = strtok(NULL, DELIMITER);
-        size_t pos = strcspn(phone_number, "\r\n");
-        phone_number[pos] = '\0';
-        
-        //printf("%s\n",name);
-        struct address *addr;
-        addr = create_object(name, surname, email, phone_number);
-        struct node *entry = malloc(sizeof(struct node));
-        if(entry == NULL){
-            perror("Nepavyko priskirti atminties: ");
-            exit(1);
-        }
-        *entry = create_node(addr);
-        add_entry_end(list, entry);
-        
-    }
 }

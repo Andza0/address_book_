@@ -2,6 +2,11 @@
 #define LINKED_LIST_H_
 
 #include "address.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "linked_list.h"
+#include <string.h>
+#include <ncurses.h>
 
 struct node{
     struct address *addr;
@@ -25,21 +30,18 @@ struct node{
 */
 
 struct node create_node(struct address *addr);
-void print_list(struct node *list);
+void print_list(struct node *list, WINDOW *win);
 void add_entry_end(struct node **list, struct node *entry);
-void add_entry_pos(struct node list, int pos);
-void delete_entry_pos(struct node list, int pos);
-void delete_list(struct node *list);
-struct node find_entry_pos(struct node list, int pos);
+int add_entry_pos(struct node **list, struct node *entry, int pos);
+int delete_entry_pos(struct node **list, int pos);
+void delete_list(struct node **list);
+struct address *find_entry_pos(struct node *list, int pos);
 
-struct node find_entry_value(struct node list, int type, char *value);
+int find_entry_value(int type, struct node *list, char *value, struct address **found_addr);
 
-struct node find_entry_name(struct node list, char *value);
-struct node find_entry_surname(struct node list, char *value);
-struct node find_entry_email(struct node list, char *value);
-struct node find_entry_phone(struct node list, char *value);
-
-
-
+int find_entry_name(struct node *list, char *value, struct address **found_addr);
+int find_entry_surname(struct node *list, char *value, struct address **found_addr);
+int find_entry_email(struct node *list, char *value, struct address **found_addr);
+int find_entry_phone(struct node *list, char *value, struct address **found_addr);
 
 #endif

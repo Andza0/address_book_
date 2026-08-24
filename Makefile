@@ -1,17 +1,21 @@
-SRC_DIR= ./src
-SRCS= $(SRC_DIR)/main.c $(SRC_DIR)/linked_list.c $(SRC_DIR)/address.c
+SRC_DIR := ./src
+SRCS := $(SRC/DIR)/$(wildcard *.c)
+OBJECTS := $(SRCS:.c=.o)
 
-CC= gcc
-FLAGS= -Iinclude -Wall -Werror -pedantic 
+CC := gcc
+CFLAGS := -Iinclude -Wall -Werror -pedantic -lncursesw
+VALGRIND_FLAGS := -g
 
 
-all: clean build
+all: clean addbook
 
-valgrind:
-	$(CC) $(SRCS) $(FLAGS) -g -o addbook 
+addbook: $(OBJECTS)
+	$(CC) $(OBJECTS) $ -o addbook 
 
-build:
-	$(CC) $(SRCS) $(FLAGS) -o addbook 
+$(OBJECTS): %.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@ 
 
 clean:
 	rm -f addbook
+
+valgrind:
