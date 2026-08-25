@@ -1,22 +1,19 @@
-OBJECTS = $(wildcard ./src/*.o)
+SRC_DIR := ./src
+SRCS := $(wildcard $(SRC_DIR)/*.c)
+OBJECTS = $(SRCS:.c=.o)
 
-all: LIB SRC addbook
+CFLAGS := -I./include -Wall -Werror -pedantic -g
+LDFLAGS := -lncursesw
 
-addbook: $(OBJECTS) 
-	$(CC) -L./lib \
-	-Wl,-rpath,'$$ORIGIN/lib' \
-	$(OBJECTS) -o addbook -llinked_list -lncurses
-.PHONY: addbook
+all: clean addbook
+.PHONY: all
 
-SRC:
-	$(MAKE) -C ./src
-.PHONY: SRC
+addbook: $(OBJECTS)
+	$(CC) $(OBJECTS) -o addbook $(LDFLAGS)
 
-LIB:
-	$(MAKE) -C ./lib
-.PHONY: LIB
+%.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
-	$(MAKE) clean -C ./src
-	$(MAKE) clean -C ./lib
+	rm -f addbook
 .PHONY: clean
