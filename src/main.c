@@ -10,6 +10,8 @@
 #include <signal.h>
 #include <errno.h>
 
+extern void _nc_free_and_exit(int);
+
 void sig_int_handler(int signal);
 void sig_term_handler(int signal);
 void sig_quit_handler(int signal);
@@ -27,6 +29,7 @@ int main(void){
     WINDOW *win_control = NULL;
 
     int ret;
+    struct node *list = NULL;
     
     setlocale(LC_ALL, "");
     setenv("NCURSES_NO_UTF8_ACS", "1", 1);
@@ -36,8 +39,6 @@ int main(void){
         perror("Nepavyko sukurti lango: ");
         goto cleanup;
     }
-
-    struct node *list = NULL;
 
     char *home_dir = getenv("HOME");
     char *csv_file = "addresses.csv";
@@ -83,6 +84,8 @@ int main(void){
         delwin(win_control);
         endwin();
         delete_list(&list);
+
+        _nc_free_and_exit(0);
 
     return 0;
 }

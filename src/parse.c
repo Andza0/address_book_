@@ -13,7 +13,7 @@ int parse_csv(FILE *stream, struct node **list){
         char *surname = strtok(NULL, DELIMITER);
         char *email = strtok(NULL, DELIMITER);
         char *phone_number = strtok(NULL, DELIMITER);
-
+//
         size_t pos = strcspn(phone_number, "\n");
         phone_number[pos] = '\0';
         

@@ -1,24 +1,22 @@
-SRC_DIR := ./src
-SRCS := $(wildcard $(SRC_DIR)/*.c)
-OBJECTS := $(SRCS:.c=.o)
+OBJECTS = $(wildcard ./src/*.o)
 
-CC := gcc
-CFLAGS := -Iinclude -Wall -Werror -pedantic
-LDFLAGS := -lncursesw
-VALGRIND_FLAGS := -g
+all: LIB SRC addbook
 
-#$(info OBJECTS = [$(OBJECTS)])
+addbook: $(OBJECTS) 
+	$(CC) -L./lib \
+	-Wl,-rpath,'$$ORIGIN/lib' \
+	$(OBJECTS) -o addbook -llinked_list -lncurses
+.PHONY: addbook
 
-all: clean addbook
+SRC:
+	$(MAKE) -C ./src
+.PHONY: SRC
 
-addbook: $(OBJECTS)
-	$(CC) $(OBJECTS)  -o addbook $(LDFLAGS)
-
-$(OBJECTS): %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+LIB:
+	$(MAKE) -C ./lib
+.PHONY: LIB
 
 clean:
-	rm -f addbook
-
-valgrind:
-	$(CC) $(CFLAGS) $(SRCS) -o addbook $(LDFLAGS)
+	$(MAKE) clean -C ./src
+	$(MAKE) clean -C ./lib
+.PHONY: clean

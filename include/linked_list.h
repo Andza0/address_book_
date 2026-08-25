@@ -4,7 +4,6 @@
 #include "address.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "linked_list.h"
 #include <string.h>
 #include <ncurses.h>
 
